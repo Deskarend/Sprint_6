@@ -50,4 +50,4 @@ class MainPage(BasePage):
 
     @allure.step('Нажать на соответствующий вопрос')
     def click_on_question(self):
-        self._wait_and_click_on_something(self.PAYMENT_QUESTION)
+        self._wait_and_click_on_element(self.PAYMENT_QUESTION)

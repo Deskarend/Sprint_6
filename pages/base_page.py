@@ -22,7 +22,7 @@ class BasePage:
         WebDriverWait(self.driver, self.WAIT_TIME).until(EC.visibility_of_element_located(locator))
         return self.driver.find_element(*locator)
 
-    def _wait_and_click_on_something(self, something_locator):
+    def _wait_and_click_on_element(self, something_locator):
         WebDriverWait(self.driver, self.WAIT_TIME).until(EC.element_to_be_clickable(something_locator))
         self.driver.find_element(*something_locator).click()
 
@@ -36,18 +36,18 @@ class BasePage:
 
     @allure.step('Нажать на кнопку "Заказать" в футоре')
     def click_on_order_button_in_header(self):
-        self._wait_and_click_on_something(self.BUTTON_ORDER_IN_HEADER)
+        self._wait_and_click_on_element(self.BUTTON_ORDER_IN_HEADER)
 
     @allure.step('Нажать на лого "Самокат" ')
     def click_on_logo_scooter(self):
-        self._wait_and_click_on_something(self.LOGO_SCOOTER)
+        self._wait_and_click_on_element(self.LOGO_SCOOTER)
 
     @allure.step('Нажать на лого "Яндекс" ')
     def click_on_logo_yandex(self):
-        self._wait_and_click_on_something(self.LOGO_YANDEX)
+        self._wait_and_click_on_element(self.LOGO_YANDEX)
 
     def _set_value_to_field(self, field_locator, value):
-        self._wait_and_click_on_something(field_locator)
+        self._wait_and_click_on_element(field_locator)
         self._wait_and_find_element(field_locator).send_keys(value)
 
         actual_value = self._wait_and_find_element(field_locator).get_attribute('value')

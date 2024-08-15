@@ -41,11 +41,11 @@ class OrderFormPage(BasePage):
 
     @allure.step('Заполнить поле "Станция метро" ')
     def set_subway_station(self, station_name):
-        self._wait_and_click_on_something(self.FIELD_SUBWAY_STATION)
+        self._wait_and_click_on_element(self.FIELD_SUBWAY_STATION)
 
         station = (By.XPATH, f".//div[contains(text(), '{station_name}')]")
         self._go_to_element(station)
-        self._wait_and_click_on_something(station)
+        self._wait_and_click_on_element(station)
 
         assert station_name in self._wait_and_find_element(self.FIELD_SUBWAY_STATION).get_attribute('value'), \
             "Отображается неверная станция"
@@ -56,7 +56,7 @@ class OrderFormPage(BasePage):
 
     @allure.step('Нажать на кнопку "Далее" ')
     def click_on_button_next(self):
-        self._wait_and_click_on_something(self.BUTTON_NEXT)
+        self._wait_and_click_on_element(self.BUTTON_NEXT)
 
     @allure.step('Проверка перехода в раздел "Про аренду" при оформлении заказа')
     def check_is_it_section_about_rental(self):
@@ -80,18 +80,18 @@ class OrderFormPage(BasePage):
 
     @allure.step('Заполнить поле "Срок аренды" ')
     def set_rental_time(self, rental_time):
-        self._wait_and_click_on_something(self.FIELD_RENTAL_TIME)
+        self._wait_and_click_on_element(self.FIELD_RENTAL_TIME)
 
         rental_time_locator = (By.XPATH, f".//div[contains(@class, 'Dropdown') and contains(text(), '{rental_time}')]")
         self._go_to_element(rental_time_locator)
-        self._wait_and_click_on_something(rental_time_locator)
+        self._wait_and_click_on_element(rental_time_locator)
 
         assert rental_time in self._wait_and_find_element(self.FIELD_RENTAL_TIME).text
 
     @allure.step('Выбрать чекбокс "Цвет самоката" ')
     def set_color(self, color):
         check_box = (By.ID, f'{color}')
-        self._wait_and_click_on_something(check_box)
+        self._wait_and_click_on_element(check_box)
 
         assert self._wait_and_find_element(check_box).is_selected(), "Чекбокс не выбирается"
 
@@ -101,7 +101,7 @@ class OrderFormPage(BasePage):
 
     @allure.step('Нажать на кнопку "Заказать" ')
     def click_on_button_order(self):
-        self._wait_and_click_on_something(self.BUTTON_ORDER)
+        self._wait_and_click_on_element(self.BUTTON_ORDER)
 
     @allure.step('Проверка перехода в окно подтверждения заказа')
     def check_is_it_confirm_alert(self):
@@ -109,7 +109,7 @@ class OrderFormPage(BasePage):
 
     @allure.step('Нажать на кнопку "Да" ')
     def click_on_button_accept_order(self):
-        self._wait_and_click_on_something(self.BUTTON_ACCEPT_ORDER)
+        self._wait_and_click_on_element(self.BUTTON_ACCEPT_ORDER)
 
     @allure.step('Проверка перехода в окно подтверждения заказа')
     def check_is_it_confirmed_alert(self):
@@ -135,7 +135,7 @@ class OrderFormPage(BasePage):
 
     @allure.step('Нажать на кнопку "Посмотреть статус" ')
     def click_on_button_status_order(self):
-        self._wait_and_click_on_something(self.BUTTON_STATUS_ORDER)
+        self._wait_and_click_on_element(self.BUTTON_STATUS_ORDER)
 
     @allure.step('Проверка оформился ли заказ ')
     def check_order_is_placed(self):
