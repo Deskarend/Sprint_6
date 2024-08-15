@@ -1,5 +1,6 @@
 import allure
 import pytest
+from conftest import driver
 from pages.main_page import MainPage
 from pages.order_form_page import OrderFormPage
 

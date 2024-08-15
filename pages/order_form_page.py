@@ -1,9 +1,5 @@
 import allure
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.common.keys import Keys
-
 from pages.base_page import BasePage
 
 
@@ -31,14 +27,6 @@ class OrderFormPage(BasePage):
         super().__init__(driver)
         self.driver = driver
 
-    def _set_value_to_field(self, field_locator, value):
-        WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable(field_locator))
-        self.driver.find_element(*field_locator).send_keys(value)
-
-        actual_value = self.driver.find_element(*field_locator).get_attribute('value')
-        assert value == actual_value, (f"Значение в поле не совпадает введенному. Ожидаемое значение {value}, "
-                                       f"фактическое - {actual_value}")
-
     @allure.step('Заполнить поле "Имя" ')
     def set_first_name(self, first_name):
         self._set_value_to_field(self.FIELD_FIRST_NAME, first_name)
@@ -53,14 +41,14 @@ class OrderFormPage(BasePage):
 
     @allure.step('Заполнить поле "Станция метро" ')
     def set_subway_station(self, station_name):
-        self._click_on_something(self.FIELD_SUBWAY_STATION)
+        self._wait_and_click_on_something(self.FIELD_SUBWAY_STATION)
 
         station = (By.XPATH, f".//div[contains(text(), '{station_name}')]")
         self._go_to_element(station)
-        self._click_on_something(station)
+        self._wait_and_click_on_something(station)
 
-        assert station_name in self.driver.find_element(*self.FIELD_SUBWAY_STATION).get_attribute(
-            'value'), "Отображается неверная станция"
+        assert station_name in self._wait_and_find_element(self.FIELD_SUBWAY_STATION).get_attribute('value'), \
+            "Отображается неверная станция"
 
     @allure.step('Заполнить поле "Телефон" ')
     def set_phone_number(self, phone_number):
@@ -68,12 +56,12 @@ class OrderFormPage(BasePage):
 
     @allure.step('Нажать на кнопку "Далее" ')
     def click_on_button_next(self):
-        self._click_on_something(self.BUTTON_NEXT)
+        self._wait_and_click_on_something(self.BUTTON_NEXT)
 
     @allure.step('Проверка перехода в раздел "Про аренду" при оформлении заказа')
     def check_is_it_section_about_rental(self):
-        assert self.driver.find_element(
-            *self.ORDER_HEADER_RENTAL).is_displayed(), "Оформление не перешло на раздел 'Про аренду' "
+        assert self._wait_and_find_element(self.ORDER_HEADER_RENTAL).is_displayed(),\
+            "Оформление не перешло на раздел 'Про аренду' "
 
     @allure.step('Заполнить раздел "Для кого самокат" ')
     def set_section_for_who(self, first_name, last_name, address, subway_station, phone_number):
@@ -88,24 +76,24 @@ class OrderFormPage(BasePage):
     @allure.step('Заполнить поле "Когда привезти самокат" ')
     def set_delivery_date(self, date):
         self._set_value_to_field(self.FIELD_DELIVERY_DATE, date)
-        self.driver.find_element(*self.FIELD_DELIVERY_DATE).send_keys(Keys.RETURN)
+        self._press_enter_in_field(self.FIELD_DELIVERY_DATE)
 
     @allure.step('Заполнить поле "Срок аренды" ')
     def set_rental_time(self, rental_time):
-        self._click_on_something(self.FIELD_RENTAL_TIME)
+        self._wait_and_click_on_something(self.FIELD_RENTAL_TIME)
 
         rental_time_locator = (By.XPATH, f".//div[contains(@class, 'Dropdown') and contains(text(), '{rental_time}')]")
         self._go_to_element(rental_time_locator)
-        self._click_on_something(rental_time_locator)
+        self._wait_and_click_on_something(rental_time_locator)
 
-        assert rental_time in self.driver.find_element(*self.FIELD_RENTAL_TIME).text
+        assert rental_time in self._wait_and_find_element(self.FIELD_RENTAL_TIME).text
 
     @allure.step('Выбрать чекбокс "Цвет самоката" ')
     def set_color(self, color):
         check_box = (By.ID, f'{color}')
-        self._click_on_something(check_box)
+        self._wait_and_click_on_something(check_box)
 
-        assert self.driver.find_element(*check_box).is_selected(), "Чекбокс не выбирается"
+        assert self._wait_and_find_element(check_box).is_selected(), "Чекбокс не выбирается"
 
     @allure.step('Заполнить комментарий')
     def set_comments(self, comments):
@@ -113,20 +101,20 @@ class OrderFormPage(BasePage):
 
     @allure.step('Нажать на кнопку "Заказать" ')
     def click_on_button_order(self):
-        self._click_on_something(self.BUTTON_ORDER)
+        self._wait_and_click_on_something(self.BUTTON_ORDER)
 
     @allure.step('Проверка перехода в окно подтверждения заказа')
     def check_is_it_confirm_alert(self):
-        assert self.driver.find_element(*self.CONFIRM_HEADER).is_displayed(), 'Окно подтверждения заказа не появилось'
+        assert self._wait_and_find_element(self.CONFIRM_HEADER).is_displayed(), 'Окно подтверждения заказа не появилось'
 
     @allure.step('Нажать на кнопку "Да" ')
     def click_on_button_accept_order(self):
-        self._click_on_something(self.BUTTON_ACCEPT_ORDER)
+        self._wait_and_click_on_something(self.BUTTON_ACCEPT_ORDER)
 
     @allure.step('Проверка перехода в окно подтверждения заказа')
     def check_is_it_confirmed_alert(self):
-        assert self.driver.find_element(
-            *self.CONFIRMED_HEADER).is_displayed(), 'Окно подтвержденного заказа не появилось'
+        assert self._wait_and_find_element(self.CONFIRMED_HEADER).is_displayed(), \
+            'Окно подтвержденного заказа не появилось'
 
     @allure.step('Заполнить раздел "Про аренду" ')
     def set_section_about_rental(self, date, rental_time, color, comments):
@@ -147,10 +135,10 @@ class OrderFormPage(BasePage):
 
     @allure.step('Нажать на кнопку "Посмотреть статус" ')
     def click_on_button_status_order(self):
-        self._click_on_something(self.BUTTON_STATUS_ORDER)
+        self._wait_and_click_on_something(self.BUTTON_STATUS_ORDER)
 
     @allure.step('Проверка оформился ли заказ ')
     def check_order_is_placed(self):
         self.click_on_button_status_order()
 
-        assert self.driver.find_element(*self.STATUS_ORDER).is_displayed(), "Заказ оформлен "
+        assert self._wait_and_find_element(self.STATUS_ORDER).is_displayed(), "Заказ оформлен "

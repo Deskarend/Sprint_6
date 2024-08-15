@@ -2,10 +2,12 @@ import allure
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.common.keys import Keys
 
 
 class BasePage:
     URL = None
+    WAIT_TIME = 5
     LOGO_SCOOTER = (By.XPATH, ".//a[contains(@class,'LogoScooter')]")
     LOGO_YANDEX = (By.XPATH, ".//a[contains(@class,'LogoYandex')]")
     BUTTON_ORDER_IN_HEADER = (By.XPATH, ".//div[contains(@class,'Header')]//button[contains(text(),'Заказать')]")
@@ -16,25 +18,44 @@ class BasePage:
     def _open_the_page(self):
         self.driver.get(self.URL)
 
-    def _go_to_element(self, element):
-        element = self.driver.find_element(*element)
-        self.driver.execute_script("arguments[0].scrollIntoView();", element)
+    def _wait_and_find_element(self, locator):
+        WebDriverWait(self.driver, self.WAIT_TIME).until(EC.visibility_of_element_located(locator))
+        return self.driver.find_element(*locator)
 
-    def _click_on_something(self, something_locator):
-        WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable(something_locator))
+    def _wait_and_click_on_something(self, something_locator):
+        WebDriverWait(self.driver, self.WAIT_TIME).until(EC.element_to_be_clickable(something_locator))
         self.driver.find_element(*something_locator).click()
+
+    def _wait_of_url_changing(self):
+        current_url = self.driver.current_url
+        WebDriverWait(self.driver, self.WAIT_TIME).until(EC.url_changes(current_url))
+
+    def _go_to_element(self, element):
+        element = self._wait_and_find_element(element)
+        self.driver.execute_script("arguments[0].scrollIntoView();", element)
 
     @allure.step('Нажать на кнопку "Заказать" в футоре')
     def click_on_order_button_in_header(self):
-        self._click_on_something(self.BUTTON_ORDER_IN_HEADER)
+        self._wait_and_click_on_something(self.BUTTON_ORDER_IN_HEADER)
 
     @allure.step('Нажать на лого "Самокат" ')
     def click_on_logo_scooter(self):
-        self._click_on_something(self.LOGO_SCOOTER)
+        self._wait_and_click_on_something(self.LOGO_SCOOTER)
 
     @allure.step('Нажать на лого "Яндекс" ')
     def click_on_logo_yandex(self):
-        self._click_on_something(self.LOGO_YANDEX)
+        self._wait_and_click_on_something(self.LOGO_YANDEX)
+
+    def _set_value_to_field(self, field_locator, value):
+        self._wait_and_click_on_something(field_locator)
+        self._wait_and_find_element(field_locator).send_keys(value)
+
+        actual_value = self._wait_and_find_element(field_locator).get_attribute('value')
+        assert value == actual_value, (f"Значение в поле не совпадает введенному. Ожидаемое значение {value}, "
+                                       f"фактическое - {actual_value}")
+
+    def _press_enter_in_field(self, field_locator):
+        self.driver.find_element(*field_locator).send_keys(Keys.RETURN)
 
     @allure.step('Проверка перехода на страницу оформления заказа')
     def check_is_it_order_page(self):
@@ -47,9 +68,8 @@ class BasePage:
 
     @allure.step('Проверка перехода на страницу Дзена')
     def check_is_it_dzen_page(self):
-        current_url = self.driver.current_url
         windows = self.driver.window_handles
         self.driver.switch_to.window(windows[1])
 
-        assert WebDriverWait(self.driver, 5).until(EC.url_changes(current_url))
+        self._wait_of_url_changing()
         assert EC.url_contains('dzen.ru'), "Переход не на страницу дзена"

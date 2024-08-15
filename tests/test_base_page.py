@@ -10,7 +10,7 @@ class TestFooter:
         base_page = MainPage(driver)
         base_page.open_the_the_page_and_go_to_the_footer()
 
-        base_page.click_on_payment_question()
+        base_page.click_on_question()
 
         base_page.check_text_answer_of_payment_question()
 
