@@ -11,6 +11,7 @@ class OrderFormPage(BasePage):
     FIELD_LAST_NAME = (By.XPATH, ".//input[contains(@placeholder, 'Фамилия')]")
     FIELD_ADDRESS = (By.XPATH, ".//input[contains(@placeholder, 'Адрес')]")
     FIELD_SUBWAY_STATION = (By.XPATH, ".//input[contains(@placeholder, 'метро')]")
+    STATION_LOCATOR = (By.XPATH, ".//div[contains(text(), '{0}')]")
     FIELD_PHONE_NUMBER = (By.XPATH, ".//input[contains(@placeholder, 'Телефон')]")
     BUTTON_NEXT = (By.XPATH, ".//button[contains(text(), 'Далее')]")
     FIELD_DELIVERY_DATE = (By.XPATH, ".//input[contains(@placeholder, 'Когда привезти')]")
@@ -22,6 +23,7 @@ class OrderFormPage(BasePage):
     CONFIRMED_HEADER = (By.XPATH, ".//div[contains(text(),'оформлен')]")
     BUTTON_STATUS_ORDER = (By.XPATH, './/button[contains(text(),"статус")]')
     STATUS_ORDER = (By.XPATH, ".//div[contains(@class,'Content')]")
+    CHECK_BOX = (By.ID, '{0}')
 
     def __init__(self, driver):
         super().__init__(driver)
@@ -43,7 +45,7 @@ class OrderFormPage(BasePage):
     def set_subway_station(self, station_name):
         self._wait_and_click_on_element(self.FIELD_SUBWAY_STATION)
 
-        station = (By.XPATH, f".//div[contains(text(), '{station_name}')]")
+        station = self._modify_locator(self.STATION_LOCATOR, station_name)
         self._go_to_element(station)
         self._wait_and_click_on_element(station)
 
@@ -60,7 +62,7 @@ class OrderFormPage(BasePage):
 
     @allure.step('Проверка перехода в раздел "Про аренду" при оформлении заказа')
     def check_is_it_section_about_rental(self):
-        assert self._wait_and_find_element(self.ORDER_HEADER_RENTAL).is_displayed(),\
+        assert self._wait_and_find_element(self.ORDER_HEADER_RENTAL).is_displayed(), \
             "Оформление не перешло на раздел 'Про аренду' "
 
     @allure.step('Заполнить раздел "Для кого самокат" ')
@@ -90,7 +92,7 @@ class OrderFormPage(BasePage):
 
     @allure.step('Выбрать чекбокс "Цвет самоката" ')
     def set_color(self, color):
-        check_box = (By.ID, f'{color}')
+        check_box = self._modify_locator(self.CHECK_BOX, color)
         self._wait_and_click_on_element(check_box)
 
         assert self._wait_and_find_element(check_box).is_selected(), "Чекбокс не выбирается"

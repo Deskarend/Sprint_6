@@ -15,6 +15,13 @@ class BasePage:
     def __init__(self, driver):
         self.driver = driver
 
+    @staticmethod
+    def _modify_locator(locator, variable):
+        method, locator = locator
+        locator = locator.format(variable)
+
+        return method, locator
+
     def _open_the_page(self):
         self.driver.get(self.URL)
 
